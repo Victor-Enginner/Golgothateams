@@ -314,6 +314,27 @@ code{font-family:var(--mono);background:var(--surface-2);padding:2px 6px;border-
 .cmdcard.used{border-color:color-mix(in srgb,var(--good) 45%,transparent)}
 .cmdcard.used .usedbtn{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
 .cmdcard.hidden,.cmdcat.hidden{display:none}
+/* arsenal: jump nav + money + certs */
+a.fchip{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.mcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:14px;padding:15px;display:flex;flex-direction:column}
+.mcard h4{font-size:15px;display:flex;align-items:center;gap:8px}
+.mcard .pay{font-family:var(--sans);font-weight:700;color:var(--accent);font-size:19px;margin:8px 0 2px;line-height:1.1}
+.mcard .desc{font-size:12.5px;color:var(--muted);margin:2px 0 10px;line-height:1.45}
+.mcard .meta-row{display:flex;flex-direction:column;gap:5px;margin-top:auto}
+.mcard .meta-row div{font-size:12px;color:var(--muted);display:flex;gap:7px}
+.mcard .meta-row b{color:var(--faint);font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;flex:none;width:58px;padding-top:1px}
+.step{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.step:last-child{border-bottom:none}
+.step .no{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:12px;background:linear-gradient(145deg,var(--accent),#8c0712);color:#fff}
+.step .body{min-width:0}
+.step .body .t{font-weight:600;font-size:14px}
+.step .body .d{font-size:12.5px;color:var(--muted);margin-top:2px}
+.step .body a{color:var(--accent);text-decoration:none;font-weight:600}
+.step .free2{font-family:var(--mono);font-size:9px;color:var(--good);border:1px solid color-mix(in srgb,var(--good) 40%,transparent);padding:1px 5px;border-radius:6px;margin-left:6px}
+.cert h4 a{color:inherit;text-decoration:none}
+.cert h4 a:hover{color:var(--accent)}
+.cert.comece{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-glow) inset}
+.cert .cost{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:7px;display:block}
 /* playbook */
 .pbcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--sev,var(--accent));border-radius:14px;padding:15px;margin-bottom:12px}
 .pbcard.open{border-color:var(--border-2)}
@@ -463,7 +484,84 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
 
   <!-- ARSENAL -->
   <section class="view" id="v-arsenal" role="tabpanel" hidden>
-    <div class="view-head"><div><div class="eyebrow">ARSENAL · OPEN-SOURCE + ONDE RECEBER</div><h2>Ferramentas, labs & bounty</h2></div></div>
+    <div class="view-head"><div><div class="eyebrow">CARREIRA · ESTUDO · DINHEIRO</div><h2>Como virar pro e ganhar</h2></div></div>
+
+    <div class="filters" style="margin-bottom:22px">
+      <a class="fchip" href="#a-money">💰 Dinheiro</a>
+      <a class="fchip" href="#a-study">🎓 Como estudar</a>
+      <a class="fchip" href="#a-certs">📜 Certificados</a>
+      <a class="fchip" href="#a-tools">🧰 Ferramentas</a>
+    </div>
+
+    <!-- DINHEIRO -->
+    <div class="sub-block" id="a-money" style="margin-top:0;scroll-margin-top:120px">
+      <div class="eyebrow">ONDE GANHAR DINHEIRO DE VERDADE</div>
+      <h3 style="font-size:19px;margin:8px 0 14px">3 caminhos reais</h3>
+      <div class="grid">
+        <div class="mcard">
+          <h4>🎯 Bug Bounty</h4>
+          <div class="pay">US$ 50 – 10.000+ <span style="font-size:11px;color:var(--muted);font-weight:400">/ falha</span></div>
+          <div class="desc">Empresas pagam você por achar falhas. De casa, no teu ritmo. É o caminho mais rápido pro 1º dinheiro.</div>
+          <div class="meta-row">
+            <div><b>Começa</b> mês 5–6 de estudo</div>
+            <div><b>Como</b> HackerOne/Bugcrowd, comece por programas VDP</div>
+          </div>
+        </div>
+        <div class="mcard">
+          <h4>💼 Vaga Pentester</h4>
+          <div class="pay">R$ 5k – 15k <span style="font-size:11px;color:var(--muted);font-weight:400">/ mês</span></div>
+          <div class="desc">Emprego fixo (CLT/PJ) em consultoria ou empresa. Salário estável + crescimento.</div>
+          <div class="meta-row">
+            <div><b>Começa</b> após eJPT + portfólio</div>
+            <div><b>Como</b> LinkedIn “Security”, consultorias de segurança</div>
+          </div>
+        </div>
+        <div class="mcard">
+          <h4>🧑‍💻 Freelance / Consultoria</h4>
+          <div class="pay">R$ 2k – 10k <span style="font-size:11px;color:var(--muted);font-weight:400">/ projeto</span></div>
+          <div class="desc">Auditorias pontuais pra clientes. Paga bem, mas exige reputação e cases.</div>
+          <div class="meta-row">
+            <div><b>Começa</b> com reputação (writeups, bounties)</div>
+            <div><b>Como</b> indicação, Upwork, rede de contatos</div>
+          </div>
+        </div>
+      </div>
+      <div class="note red" style="margin-top:14px"><div class="ico">⚠</div><div><h4>Sem atalho ilegal</h4><p>Hacking “do mal” paga mal pelo risco e dá cadeia (art. 154-A). Os 3 caminhos acima são legais e é onde está o dinheiro de verdade.</p></div></div>
+    </div>
+
+    <!-- COMO ESTUDAR -->
+    <div class="sub-block" id="a-study" style="scroll-margin-top:120px">
+      <div class="eyebrow">COMO ESTUDAR DE VERDADE</div>
+      <h3 style="font-size:19px;margin:8px 0 6px">A ordem que funciona (grátis → pago)</h3>
+      <p class="muted" style="font-size:13px;margin:0 0 12px">Siga nesta sequência. Não pule etapas — cada uma prepara a próxima.</p>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px 16px">
+        <div class="step"><div class="no">1</div><div class="body"><div class="t">Fundamentos de rede + Linux <span class="free2">GRÁTIS</span></div><div class="d">TCP/IP, HTTP, bash. Veja a aba <strong>Setup</strong> e monte teu ambiente.</div></div></div>
+        <div class="step"><div class="no">2</div><div class="body"><div class="t"><a href="https://portswigger.net/web-security" target="_blank">PortSwigger Academy</a> <span class="free2">GRÁTIS</span></div><div class="d">A MELHOR escola de web security do mundo, de graça. Faça os labs do OWASP Top 10.</div></div></div>
+        <div class="step"><div class="no">3</div><div class="body"><div class="t"><a href="https://tryhackme.com" target="_blank">TryHackMe</a> — trilha Jr Penetration Tester</div><div class="d">Aprendizado guiado, mão na massa. Ótimo pra fixar.</div></div></div>
+        <div class="step"><div class="no">4</div><div class="body"><div class="t"><a href="https://overthewire.org/wargames/" target="_blank">OverTheWire</a> + <a href="https://github.com/juice-shop/juice-shop" target="_blank">Juice Shop</a> <span class="free2">GRÁTIS</span></div><div class="d">Pratique Linux/SSH e quebre uma app vulnerável de propósito.</div></div></div>
+        <div class="step"><div class="no">5</div><div class="body"><div class="t"><a href="https://www.hackthebox.com" target="_blank">Hack The Box</a> — máquinas reais</div><div class="d">Dificuldade sobe. Comece pelas “Easy”. Publique writeups no GitHub.</div></div></div>
+        <div class="step"><div class="no">6</div><div class="body"><div class="t">Tire o <a href="#a-certs">eJPT</a> + comece bug bounty</div><div class="d">1º certificado prático, depois crie perfil no HackerOne e vá pros programas VDP.</div></div></div>
+      </div>
+    </div>
+
+    <!-- CERTIFICADOS -->
+    <div class="sub-block" id="a-certs" style="scroll-margin-top:120px">
+      <div class="eyebrow">CERTIFICADOS · NESTA ORDEM</div>
+      <h3 style="font-size:19px;margin:8px 0 6px">Quais tirar, quanto custa, quando</h3>
+      <p class="muted" style="font-size:13px;margin:0 0 14px">Valores aproximados (2026). Você <strong>não precisa de todos</strong> — o eJPT já abre portas; o OSCP é o topo.</p>
+      <div class="certs">
+        <div class="cert"><div class="lvl">① ENTRADA · opcional</div><h4><a href="https://www.comptia.org/certifications/security" target="_blank">CompTIA Security+</a></h4><div class="p">Base teórica reconhecida por RH.</div><span class="cost">~US$ 400 · 1–2 meses</span></div>
+        <div class="cert comece"><div class="lvl" style="color:var(--accent)">② COMECE AQUI</div><h4><a href="https://security.ine.com/certifications/ejpt-certification/" target="_blank">eJPT · INE</a></h4><div class="p">Barato e 100% prático. Teu 1º certificado real.</div><span class="cost">~US$ 200 · 1–2 meses</span></div>
+        <div class="cert"><div class="lvl">③ WEB / BOUNTY</div><h4><a href="https://portswigger.net/web-security/certification" target="_blank">Burp Suite Certified</a></h4><div class="p">Foco em web — casa perfeito com bug bounty.</div><span class="cost">~US$ 99 · 1 mês</span></div>
+        <div class="cert"><div class="lvl">④ PROFISSIONAL</div><h4><a href="https://certifications.tcm-sec.com/pnpt/" target="_blank">PNPT · TCM</a></h4><div class="p">Pentest realista com relatório final.</div><span class="cost">~US$ 400 · 2–3 meses</span></div>
+        <div class="cert"><div class="lvl" style="color:var(--accent)">⑤ A MAIS VALORIZADA</div><h4><a href="https://www.offsec.com/courses/pen-200/" target="_blank">OSCP · OffSec</a></h4><div class="p">O selo de ouro — abre quase qualquer porta.</div><span class="cost">~US$ 1.600+ · 3–6 meses</span></div>
+      </div>
+    </div>
+
+    <!-- FERRAMENTAS / RECURSOS -->
+    <div class="sub-block" id="a-tools" style="scroll-margin-top:120px">
+      <div class="eyebrow">ARSENAL OPEN-SOURCE + REFERÊNCIA</div>
+      <h3 style="font-size:19px;margin:8px 0 14px">Ferramentas, labs & onde ver os tops</h3>
     <div class="grid">
       <div class="res"><div class="k">GITHUB · RECON & SCAN</div><h4>⚙ Ferramentas</h4><ul>
         <li><a href="https://github.com/projectdiscovery/nuclei" target="_blank"><span class="nm">projectdiscovery/nuclei</span><span class="meta">scan</span></a></li>
@@ -501,7 +599,7 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
         <li><a href="https://www.hackthebox.com" target="_blank"><span class="nm">Hack The Box</span><span class="meta">freemium</span></a></li>
         <li><a href="https://overthewire.org/wargames/" target="_blank"><span class="nm">OverTheWire</span><span class="free">GRÁTIS</span></a></li>
         <li><a href="https://picoctf.org" target="_blank"><span class="nm">picoCTF</span><span class="free">GRÁTIS</span></a></li></ul></div>
-      <div class="res"><div class="k">BOUNTY · ONDE RECEBER $</div><h4>🎯 Plataformas</h4><ul>
+      <div class="res" id="a-bounty"><div class="k">BOUNTY · ONDE RECEBER $</div><h4>🎯 Plataformas</h4><ul>
         <li><a href="https://hackerone.com" target="_blank"><span class="nm">HackerOne</span><span class="meta">#1</span></a></li>
         <li><a href="https://www.bugcrowd.com" target="_blank"><span class="nm">Bugcrowd</span><span class="meta">top</span></a></li>
         <li><a href="https://www.intigriti.com" target="_blank"><span class="nm">Intigriti</span><span class="meta">EU</span></a></li>
@@ -513,15 +611,6 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
         <li><a href="https://ollama.com/library/llama3.1" target="_blank"><span class="nm">Llama 3.1 8B</span><span class="meta">geral</span></a></li>
         <li><a href="https://ollama.com/library/mistral" target="_blank"><span class="nm">Mistral 7B</span><span class="meta">leve</span></a></li></ul></div>
     </div>
-    <div class="sub-block">
-      <div class="eyebrow">CREDENCIAIS · DO INICIANTE AO SÊNIOR</div><h3 style="font-size:19px;margin:8px 0 14px">Certificações</h3>
-      <div class="certs">
-        <div class="cert"><div class="lvl">ENTRADA</div><h4>CompTIA Security+</h4><div class="p">Base teórica reconhecida.</div></div>
-        <div class="cert"><div class="lvl">1º PRÁTICO</div><h4>eJPT · INE</h4><div class="p">Barata e 100% hands-on.</div></div>
-        <div class="cert"><div class="lvl">WEB / BOUNTY</div><h4>Burp Certified</h4><div class="p">PortSwigger — foco web.</div></div>
-        <div class="cert"><div class="lvl">PROFISSIONAL</div><h4>PNPT · TCM</h4><div class="p">Pentest realista c/ relatório.</div></div>
-        <div class="cert" style="border-color:color-mix(in srgb,var(--accent) 40%,transparent)"><div class="lvl" style="color:var(--accent)">A MAIS VALORIZADA</div><h4>OSCP · OffSec</h4><div class="p">O selo de ouro.</div></div>
-      </div>
     </div>
     <div class="note info" style="margin-top:16px"><div class="ico">ℹ</div><div><h4>Sobre modelos “uncensored”</h4><p>Modelos sem filtro (linha Josiefied, chineses, etc.) rodam localmente e não são ilegais — mas um chatbot sem censura <strong>não te ensina a hackear</strong>. O aprendizado vem dos labs. Use um bom modelo de <strong>código</strong> como copiloto; em CPU fique em 7B quantizado (Q4).</p></div></div>
   </section>
@@ -724,6 +813,7 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
   /* ---------- theme ---------- */
   var root=document.documentElement;
   if(S.theme==='light'||S.theme==='dark')root.setAttribute('data-theme',S.theme);
+  else root.setAttribute('data-theme','dark'); /* padrao da marca: preto/vermelho */
   function curTheme(){var a=root.getAttribute('data-theme');if(a)return a;return (window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}
   $('#theme').addEventListener('click',function(){var n=curTheme()==='dark'?'light':'dark';root.setAttribute('data-theme',n);S.theme=n;save();});
 
