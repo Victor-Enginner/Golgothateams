@@ -69,7 +69,7 @@ button{font-family:inherit}
 
 /* header */
 .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);background:color-mix(in srgb,var(--bg) 74%,transparent);border-bottom:1px solid var(--border)}
-.topbar .wrap{display:flex;align-items:center;gap:12px;padding-block:11px}
+.topbar .wrap{display:flex;align-items:center;gap:8px;padding-block:11px}
 .brand{display:flex;align-items:center;gap:11px;font-family:var(--sans);font-weight:700}
 .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;background:linear-gradient(145deg,var(--accent),#8c0712);box-shadow:0 0 0 1px rgba(255,255,255,.12),0 8px 20px -6px var(--accent-glow);font-family:var(--mono);font-weight:700;color:#fff;font-size:15px}
 .brand small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.24em;color:var(--muted);font-weight:500}
@@ -280,6 +280,14 @@ code{font-family:var(--mono);background:var(--surface-2);padding:2px 6px;border-
 .modal textarea{width:100%;min-height:150px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--fg);font-family:var(--mono);font-size:12px;outline:none;resize:vertical}
 .modal textarea:focus{border-color:var(--accent)}
 .modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+/* busca global */
+.gres{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;border:1px solid var(--border);background:var(--surface);text-decoration:none;color:var(--fg);width:100%;cursor:pointer;text-align:left;font-family:inherit}
+.gres:hover{border-color:var(--accent);background:var(--surface-2)}
+.gres .gi{flex:none;font-size:14px}
+.gres .gt{flex:1;min-width:0;display:flex;flex-direction:column}
+.gres .gn{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gres .gs{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gres .gcat{font-family:var(--mono);font-size:8.5px;color:var(--faint);flex:none;text-transform:uppercase;letter-spacing:.08em}
 
 /* notes */
 .note{display:flex;gap:13px;align-items:flex-start;border-radius:16px;padding:16px;background:var(--surface);border:1px solid var(--border)}
@@ -361,6 +369,7 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
 
 @media (max-width:860px){.tiles{grid-template-columns:repeat(2,1fr)}.kanban{grid-template-columns:repeat(2,1fr)}.cols2{grid-template-columns:1fr}}
 @media (max-width:520px){.kanban{grid-template-columns:1fr}.brand small{display:none}}
+@media (max-width:430px){.rtxt{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -370,7 +379,8 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
   <div class="wrap">
     <div class="brand"><div class="logo" id="brandlogo">G</div><div><span id="brandname" class="cname" title="Clique para renomear sua marca">GOLGOTHATEAMS</span><small>SECURITY OPS HUB</small></div></div>
     <div class="spacer"></div>
-    <button class="btn ghost sm" id="reset" title="Zerar progresso">↻ Reset</button>
+    <button class="icon-btn glass" id="gsearch-btn" aria-label="Buscar em tudo" title="Buscar em tudo">🔍</button>
+    <button class="btn ghost sm" id="reset" title="Zerar progresso">↻<span class="rtxt"> Reset</span></button>
     <button class="icon-btn glass" id="theme" aria-label="Tema" title="Tema">◐</button>
   </div>
 </header>
@@ -719,7 +729,31 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
   <section class="view" id="v-playbook" role="tabpanel" hidden>
     <div class="view-head"><div><div class="eyebrow">PLAYBOOK · POR TIPO DE BUG</div><h2>Como caçar cada falha</h2></div>
       <div class="faint" style="font-family:var(--mono);font-size:12px" id="pb-count">0/0 estudados</div></div>
-    <p class="muted" style="font-size:13.5px;margin:-6px 0 18px">Para cada falha: o que é, como achar, como provar (PoC) e o impacto. Clique para abrir. Estude na ordem e marque o que dominar.</p>
+    <p class="muted" style="font-size:13.5px;margin:-6px 0 16px">Para cada falha: o que é, como achar, como provar (PoC) e o impacto. Clique para abrir. Estude na ordem e marque o que dominar.</p>
+    <div class="console" style="margin-bottom:20px">
+      <div class="bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="t">📝 template de report · HackerOne / Bugcrowd</span><button class="copybtn" id="report-copy">copiar</button></div>
+<pre id="report-tpl"># [Tipo de Falha] em [endpoint / funcionalidade]
+
+## Resumo
+Descrição curta da vulnerabilidade e do impacto.
+
+## Severidade
+[ Crítica / Alta / Média / Baixa ]  ·  CVSS: X.X
+
+## Passos para reproduzir
+1.
+2.
+3.
+
+## Prova de Conceito (PoC)
+[ request HTTP / payload / screenshot ]
+
+## Impacto
+O que um atacante consegue fazer na prática.
+
+## Correção sugerida
+Como o time deve mitigar a falha.</pre>
+    </div>
     <div id="pb-list"></div>
   </section>
 
@@ -743,6 +777,11 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
   </section>
 
 </main>
+
+<div class="modal" id="search-overlay"><div class="box" style="max-width:580px">
+  <input id="gsearch" class="search" type="text" placeholder="🔍 Buscar ferramenta, falha, comando, modelo, aba..." autocomplete="off" style="margin-bottom:12px;width:100%">
+  <div id="gresults" style="max-height:62vh;overflow:auto;display:flex;flex-direction:column;gap:6px"></div>
+</div></div>
 
 <div class="modal" id="importmodal"><div class="box">
   <h4>Importar backup</h4>
@@ -1226,7 +1265,25 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
      find:'Fluxo de login com OTP/2FA. Teste brute force do código, reusar código antigo, pular a etapa.',
      prove:'Force o código sem rate limit, ou acesse a rota pós-login direto sem validar o 2FA.',
      payload:'brute 000000-999999  /  ir direto em /dashboard sem o passo de OTP',
-     impact:'Tomada de conta mesmo com 2FA ativo. Alto valor.'}
+     impact:'Tomada de conta mesmo com 2FA ativo. Alto valor.'},
+    {id:'cache',n:'Web Cache Poisoning',sev:'ALTA',c:'#ff8f3f',
+     what:'Envenenar o cache com uma resposta maliciosa que depois é servida a outros usuários.',
+     find:'Headers não-chave que mudam a resposta: X-Forwarded-Host, X-Forwarded-Scheme, X-Host.',
+     prove:'Injete payload por um header unkeyed e confirme que a resposta cacheada reflete pra outros.',
+     payload:'X-Forwarded-Host: evil.com  (vira cache p/ todo mundo)',
+     impact:'XSS/redirect em massa servido pelo cache; DoS de cache.'},
+    {id:'gqlbatch',n:'GraphQL Batching Attack',sev:'ALTA',c:'#ff8f3f',
+     what:'Mandar muitas queries/mutations numa requisição só pra burlar rate limit (brute de OTP/login).',
+     find:'Endpoint GraphQL que aceita um array de operações numa única requisição.',
+     prove:'Envie 100 tentativas de login/OTP num único POST batched e veja o rate limit não pegar.',
+     payload:'[{login(code:0000)},{login(code:0001)}, ... x1000]',
+     impact:'Bypass de rate limit: brute de 2FA, cupons, senhas.'},
+    {id:'viewstate',n:'.NET ViewState Deserialization',sev:'CRÍTICA',c:'#ff2130',
+     what:'ViewState ASP.NET sem MAC (ou com machineKey vazada) desserializa objeto malicioso = RCE.',
+     find:'Campo __VIEWSTATE em forms ASP.NET. Decode base64 e cheque se há proteção (MAC).',
+     prove:'Gere o payload com ysoserial.net usando a machineKey e envie no __VIEWSTATE.',
+     payload:'ysoserial.net -p ViewState -g ... (no campo __VIEWSTATE)',
+     impact:'Execução remota de código no servidor Windows/IIS. Crítico.'}
   ];
   var pbOpen={};
   function pbField(l,v){return '<div><label>'+l+'</label><p>'+esc(v)+'</p></div>';}
@@ -1529,6 +1586,33 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
       migrate(S);save();imod.classList.remove('show');renderAll();toast('Backup importado ✓');
     }catch(e){toast('JSON inválido — confira o que você colou.');}
   });
+
+  /* ---------- busca global ---------- */
+  var INDEX=[];
+  function buildIndex(){
+    INDEX=[];
+    [['comando','Comando'],['roadmap','Roadmap'],['setup','Setup'],['arsenal','Arsenal'],['projetos','Projetos'],['progresso','Progresso'],['commands','Comandos'],['playbook','Playbook'],['models','Modelos']].forEach(function(t){INDEX.push({n:t[1],s:'ir para a aba',cat:'aba',icon:'📑',tab:t[0]});});
+    (typeof COMMANDS!=='undefined'?COMMANDS:[]).forEach(function(c){c.items.forEach(function(it){INDEX.push({n:it.n,s:it.d,cat:'comando',icon:'⌨',tab:'commands'});});});
+    (typeof MODELS!=='undefined'?MODELS:[]).forEach(function(c){c.items.forEach(function(it){INDEX.push({n:it.n,s:it.meta,cat:'modelo',icon:'🧠',tab:'models'});});});
+    (typeof PLAYBOOK!=='undefined'?PLAYBOOK:[]).forEach(function(it){INDEX.push({n:it.n,s:it.what,cat:'falha',icon:'📖',tab:'playbook'});});
+    $$('#v-arsenal .res a[href]').forEach(function(a){var nm=$('.nm',a);if(nm)INDEX.push({n:nm.textContent.trim(),s:a.getAttribute('href').replace(/^https?:\/\//,''),cat:'ferramenta',icon:'🧰',href:a.getAttribute('href')});});
+  }
+  function runSearch(q){
+    q=(q||'').trim().toLowerCase();var host=$('#gresults');
+    if(!q){host.innerHTML='<p class="muted" style="font-size:12.5px;padding:8px">Digite pra buscar em ferramentas, falhas, comandos, modelos e abas.</p>';return;}
+    var res=INDEX.filter(function(x){return (x.n+' '+(x.s||'')+' '+x.cat).toLowerCase().indexOf(q)>=0;}).slice(0,40);
+    host.innerHTML=res.length?res.map(function(x){
+      var inner='<span class="gi">'+x.icon+'</span><span class="gt"><span class="gn">'+esc(x.n)+'</span><span class="gs">'+esc(x.s||'')+'</span></span><span class="gcat">'+x.cat+'</span>';
+      return x.href?'<a class="gres" href="'+esc(x.href)+'" target="_blank">'+inner+'</a>':'<button class="gres" data-gotab="'+x.tab+'">'+inner+'</button>';
+    }).join(''):'<p class="muted" style="font-size:12.5px;padding:8px">Nada encontrado para "'+esc(q)+'".</p>';
+  }
+  var sov=$('#search-overlay');
+  $('#gsearch-btn').addEventListener('click',function(){buildIndex();sov.classList.add('show');var i=$('#gsearch');i.value='';runSearch('');setTimeout(function(){try{i.focus();}catch(e){}},60);});
+  $('#gsearch').addEventListener('input',function(e){runSearch(e.target.value);});
+  sov.addEventListener('click',function(e){if(e.target===sov)sov.classList.remove('show');});
+  $('#gresults').addEventListener('click',function(e){var b=e.target.closest('[data-gotab]');if(b){showTab(b.getAttribute('data-gotab'));sov.classList.remove('show');}});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')sov.classList.remove('show');});
+  (function(){var rb=$('#report-copy'),tpl=$('#report-tpl');if(rb&&tpl)wireCopy(rb,tpl.innerText);})();
 
   // search + filters
   $('#search').addEventListener('input',function(e){filter.text=e.target.value.trim();applyFilter();});
