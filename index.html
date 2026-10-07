@@ -315,6 +315,8 @@ code{font-family:var(--mono);background:var(--surface-2);padding:2px 6px;border-
 .cmdcard.used{border-color:color-mix(in srgb,var(--good) 45%,transparent)}
 .cmdcard.used .usedbtn{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
 .cmdcard.hidden,.cmdcat.hidden{display:none}
+.cmdcard.fav{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-glow) inset,0 10px 30px -18px var(--accent-glow)}
+.favtag{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:#fff;background:linear-gradient(145deg,var(--accent),#8c0712);padding:2px 7px;border-radius:999px;margin-left:7px;vertical-align:middle;white-space:nowrap}
 /* arsenal: jump nav + money + certs */
 a.fchip{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .mcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:14px;padding:15px;display:flex;flex-direction:column}
@@ -1065,7 +1067,7 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
   /* ---------- modelos LLM ---------- */
   var MODELS=[
     {cat:'Uncensored / Abliterated',icon:'🔓',items:[
-      {n:'Josiefied-Qwen 7B',meta:'Goekdeniz · abliterated',c:'ollama run hf.co/Goekdeniz-Guelmez/Josiefied-Qwen2.5-7B-Instruct-abliterated-GGUF'},
+      {n:'Josiefied-Qwen 7B',meta:'Goekdeniz · abliterated · roda em CPU (Q4)',c:'ollama run hf.co/Goekdeniz-Guelmez/Josiefied-Qwen2.5-7B-Instruct-abliterated-GGUF',fav:true},
       {n:'Dolphin-Mistral',meta:'Eric Hartford · sem filtro',c:'ollama run dolphin-mistral'},
       {n:'Dolphin 3',meta:'Cognitive Computations',c:'ollama run dolphin3'},
       {n:'Llama 3.2 Abliterated',meta:'huihui_ai · leve',c:'ollama run huihui_ai/llama3.2-abliterate'}
@@ -1101,8 +1103,8 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
     MODELS.forEach(function(cat){
       var items=cat.items.map(function(it){
         total++;var key=cat.cat+'|'+it.n,u=!!used[key];if(u)uc++;
-        return '<div class="cmdcard'+(u?' used':'')+'" data-modkey="'+esc(key)+'">'+
-          '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="cn">'+esc(it.n)+'</div>'+
+        return '<div class="cmdcard'+(u?' used':'')+(it.fav?' fav':'')+'" data-modkey="'+esc(key)+'">'+
+          '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="cn">'+esc(it.n)+(it.fav?'<span class="favtag">👑 FAVORITO</span>':'')+'</div>'+
           '<button class="usedbtn" data-modinst="'+esc(key)+'">'+(u?'✓ instalei':'marcar')+'</button></div>'+
           '<div class="cd">'+esc(it.meta)+'</div>'+
           '<div class="cc">'+esc(it.c)+'<button class="ccopy" data-copy="'+esc(it.c)+'">copiar</button></div></div>';
@@ -1197,7 +1199,31 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
      find:'subfinder + httpx; ache CNAME pra S3/GitHub Pages/Heroku respondendo NoSuchBucket ou 404 do serviço.',
      prove:'Registre o recurso órfão (ex: bucket S3 com o mesmo nome) e sirva conteúdo no subdomínio do alvo.',
      payload:'sub.alvo.com -> CNAME bucket.s3.amazonaws.com (NoSuchBucket)',
-     impact:'Controle do subdomínio: phishing, roubo de cookies, bypass de SSO.'}
+     impact:'Controle do subdomínio: phishing, roubo de cookies, bypass de SSO.'},
+    {id:'ssti',n:'SSTI — Server-Side Template Injection',sev:'CRÍTICA',c:'#ff2130',
+     what:'Entrada do usuário é renderizada como template no servidor, podendo virar execução de código.',
+     find:'Campos refletidos (nome, assunto de email, perfil). Injete {{7*7}} e veja se vira 49.',
+     prove:'Confirme a engine (Jinja2, Twig, Freemarker) e escale de 49 para leitura de arquivo / RCE.',
+     payload:'{{7*7}}  depois  {{config.items()}}  (Jinja2)',
+     impact:'Execução remota de código no servidor. Crítico.'},
+    {id:'deser',n:'Deserialização Insegura',sev:'CRÍTICA',c:'#ff2130',
+     what:'O app desserializa dados controlados pelo atacante, permitindo execução de código.',
+     find:'Cookies/params com base64 de objetos: Java (rO0), PHP (O:), .NET, pickle Python.',
+     prove:'Gere um gadget chain (ysoserial) e envie; confirme a execução por OOB (interactsh).',
+     payload:'rO0AB... (Java)  /  O:4:"User":... (PHP)',
+     impact:'RCE e escalada total. Crítico.'},
+    {id:'openredir',n:'Open Redirect',sev:'MÉDIA',c:'#ffd60a',
+     what:'Parâmetro de redirecionamento aceita URL externa — usado p/ phishing e bypass de filtros.',
+     find:'Params: redirect, url, next, return, continue, dest, callback.',
+     prove:'Troque o valor por https://evil.com e veja se o app te joga pra fora do domínio.',
+     payload:'?next=https://evil.com   (ou //evil.com, /\\evil.com)',
+     impact:'Phishing crível, roubo de token OAuth, bypass de whitelist.'},
+    {id:'2fa',n:'Bypass de 2FA',sev:'ALTA',c:'#ff8f3f',
+     what:'Burlar o segundo fator por falha de lógica (sem rate limit, resposta vaza o código, pulo de etapa).',
+     find:'Fluxo de login com OTP/2FA. Teste brute force do código, reusar código antigo, pular a etapa.',
+     prove:'Force o código sem rate limit, ou acesse a rota pós-login direto sem validar o 2FA.',
+     payload:'brute 000000-999999  /  ir direto em /dashboard sem o passo de OTP',
+     impact:'Tomada de conta mesmo com 2FA ativo. Alto valor.'}
   ];
   var pbOpen={};
   function pbField(l,v){return '<div><label>'+l+'</label><p>'+esc(v)+'</p></div>';}
