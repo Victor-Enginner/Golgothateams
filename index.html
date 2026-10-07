@@ -50,6 +50,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(900px 500px at 82% -8%,var(--accent-glow),transparent 60%),radial-gradient(700px 600px at -5% 10%,rgba(255,33,48,.08),transparent 55%)}
 #cryptobg{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.40;transition:opacity .4s}
+#cursorfx{position:fixed;inset:0;z-index:55;pointer-events:none}
 :root[data-theme="light"] #cryptobg{opacity:.08}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #cryptobg{opacity:.08}}
 @media (prefers-reduced-motion:reduce){#cryptobg{opacity:.18}}
@@ -380,6 +381,7 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
 
 <canvas id="cryptobg" aria-hidden="true"></canvas>
+<canvas id="cursorfx" aria-hidden="true"></canvas>
 
 <header class="topbar">
   <div class="wrap">
@@ -1745,6 +1747,52 @@ Como o time deve mitigar a falha.</pre>
     if(document.hidden){ if(raf) cancelAnimationFrame(raf); raf=0; }
     else if(!reduce && !raf){ raf=requestAnimationFrame(loop); }
   });
+})();
+</script>
+
+<script>
+/* ===== GOLGOTHATEAMS · trilha encode/decode no cursor e no touch ===== */
+(function(){
+  var cv=document.getElementById('cursorfx'); if(!cv) return;
+  var cx; try{cx=cv.getContext('2d');}catch(e){return;}
+  var reduce=false; try{reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+  if(reduce) return;
+  var vw,vh,dpr, parts=[], running=false, lastSpawn=0;
+  var WORDS=['ACCESS','ADMIN','root','GET /','SELECT','shell','0xBEEF','SID','NTLM','grant','TRUE','exec','scan','pwn','TOKEN','bypass','RCE','hash','sudo','kerberos'];
+  var HEXP='0123456789abcdef';
+  function size(){dpr=Math.min(window.devicePixelRatio||1,2);vw=window.innerWidth;vh=window.innerHeight;cv.width=Math.floor(vw*dpr);cv.height=Math.floor(vh*dpr);cv.style.width=vw+'px';cv.style.height=vh+'px';try{cx.setTransform(dpr,0,0,dpr,0,0);}catch(e){}}
+  function scr(n){var s='';for(var i=0;i<n;i++)s+=HEXP.charAt((Math.random()*16)|0);return s;}
+  function spawn(x,y){
+    if(parts.length>44) return;
+    var w=WORDS[(Math.random()*WORDS.length)|0];
+    parts.push({x:x+(Math.random()*16-8),y:y+(Math.random()*12-6),w:w,enc:scr(Math.max(4,w.length+2)),t:0,life:68,vy:-0.35-Math.random()*0.55});
+  }
+  function onMove(x,y){ var now=(window.performance&&performance.now)?performance.now():Date.now(); if(now-lastSpawn>45){lastSpawn=now; spawn(x,y); ensure();} }
+  window.addEventListener('mousemove',function(e){onMove(e.clientX,e.clientY);},{passive:true});
+  window.addEventListener('touchmove',function(e){var t=e.touches&&e.touches[0];if(t)onMove(t.clientX,t.clientY);},{passive:true});
+  function frame(){
+    cx.clearRect(0,0,vw,vh);
+    cx.font='11px "JetBrains Mono", ui-monospace, monospace';
+    for(var i=parts.length-1;i>=0;i--){
+      var p=parts[i]; p.t++;
+      var prog=p.t/p.life; if(prog>=1){parts.splice(i,1);continue;}
+      p.y+=p.vy;
+      var reveal=Math.floor(Math.min(1,prog*2)*p.w.length);
+      var disp=''; for(var j=0;j<p.w.length;j++){disp+=(j<reveal?p.w.charAt(j):HEXP.charAt((Math.random()*16)|0));}
+      var fade=prog<0.78?1:(1-(prog-0.78)/0.22); if(fade<0)fade=0;
+      var g=(Math.random()<0.18)?(Math.random()*2.4-1.2):0;
+      cx.fillStyle='rgba(255,45,58,'+(0.22*fade).toFixed(3)+')';
+      cx.fillText('enc '+p.enc, p.x+g, p.y-11);
+      var done=reveal>=p.w.length;
+      cx.fillStyle=done?'rgba(255,255,255,'+(0.9*fade).toFixed(3)+')':'rgba(255,95,105,'+(0.85*fade).toFixed(3)+')';
+      cx.fillText((done?'dec ':'»»» ')+disp, p.x+g, p.y);
+    }
+    if(parts.length>0){requestAnimationFrame(frame);} else {running=false; cx.clearRect(0,0,vw,vh);}
+  }
+  function ensure(){ if(!running){running=true; requestAnimationFrame(frame);} }
+  size();
+  window.addEventListener('resize',size);
+  document.addEventListener('visibilitychange',function(){ if(document.hidden){parts=[];running=false;cx.clearRect(0,0,vw,vh);} });
 })();
 </script>
 
