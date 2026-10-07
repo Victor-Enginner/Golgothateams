@@ -95,7 +95,7 @@ button{font-family:inherit}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:13px}
 .tile{border-radius:18px;padding:17px;background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden}
 .tile .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
-.tile .big{font-family:var(--sans);font-weight:700;font-size:clamp(24px,4vw,34px);line-height:1.1;margin:9px 0 3px}
+.tile .big{font-family:var(--sans);font-weight:700;font-size:clamp(22px,3.6vw,32px);line-height:1.1;margin:9px 0 3px;overflow-wrap:anywhere}
 .tile .sub{font-size:12px;color:var(--muted)}
 .tile.focus{border-color:color-mix(in srgb,var(--accent) 45%,transparent);box-shadow:0 0 0 1px var(--accent-glow) inset}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
@@ -879,7 +879,7 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
     var r=roadStats(),su=setupStats(),cp=currentPhase();
     var dom=(S.cols[S.cols.length-1]||{cards:[]}).cards.length, od=overdueCount();
     $('#stat-tiles').innerHTML=
-      tile('focus','FASE ATUAL','<span class="dot"></span>',cp.n.replace('FASE ','')+' · '+cp.t.split(' ')[0],cp.wk)+
+      tile('focus','FASE ATUAL','<span class="dot"></span>',cp.n.replace('FASE ',''),esc(cp.t)+' · '+cp.wk)+
       tile('','ROADMAP','',r.pct+'%','<span class="tnum">'+r.done+'/'+r.total+'</span> tarefas')+
       tile('','SETUP','',su.done+'/'+su.total,'ambiente pronto')+
       tile(od>0?'focus':'','EM ATRASO','',String(od),od>0?'prazos vencidos':'tudo em dia')+
