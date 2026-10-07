@@ -810,6 +810,14 @@ Como o time deve mitigar a falha.</pre>
   "use strict";
   var KEY='redops-state-v2';
 
+  /* kits compartilhados (rodam em qualquer Linux Debian: Termux-proot / Kali-WSL / Zorin) */
+  var GOKIT={
+    cmd:'# ProjectDiscovery\ngo install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest\ngo install github.com/projectdiscovery/httpx/cmd/httpx@latest\ngo install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest\ngo install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest\ngo install github.com/projectdiscovery/dnsx/cmd/dnsx@latest\ngo install github.com/projectdiscovery/katana/cmd/katana@latest\ngo install github.com/projectdiscovery/notify/cmd/notify@latest\n# tomnomnom\ngo install github.com/tomnomnom/waybackurls@latest\ngo install github.com/tomnomnom/assetfinder@latest\ngo install github.com/tomnomnom/httprobe@latest\ngo install github.com/tomnomnom/anew@latest\ngo install github.com/tomnomnom/gf@latest\ngo install github.com/tomnomnom/unfurl@latest\ngo install github.com/tomnomnom/qsreplace@latest\n# web / exploit\ngo install github.com/ffuf/ffuf/v2@latest\ngo install github.com/lc/gau/v2/cmd/gau@latest\ngo install github.com/hahwul/dalfox/v2@latest\ngo install github.com/sensepost/gowitness@latest\ngo install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest\ngo install github.com/KathanP19/Gxss@latest\ngo install github.com/hakluke/hakrawler@latest',
+    lines:[['# Kit Go — 20+ ferramentas (copie TUDO no botao)','cmt'],['# ProjectDiscovery:','cmt'],['go','cmd',' install subfinder httpx nuclei naabu dnsx katana notify','arg'],['# tomnomnom:','cmt'],['go','cmd',' install waybackurls assetfinder httprobe anew gf unfurl qsreplace','arg'],['# web/exploit:','cmt'],['go','cmd',' install ffuf gau dalfox gowitness crlfuzz Gxss hakrawler','arg']]};
+  var PYKIT={
+    cmd:'# Rust\ncargo install rustscan x8\n# Python (pipx)\npipx install arjun\npipx install bbot\npipx install dnsgen\n# ferramentas por clone\nmkdir -p ~/tools && cd ~/tools\ngit clone https://github.com/s0md3v/XSStrike.git\ngit clone https://github.com/s0md3v/Corsy.git\ngit clone https://github.com/devanshbatham/ParamSpider.git\ngit clone https://github.com/swisskyrepo/SSRFmap.git\ngit clone https://github.com/commixproject/commix.git\n# wordlists + framework all-in-one\ngit clone https://github.com/danielmiessler/SecLists.git\ngit clone https://github.com/six2dez/reconftw.git && cd reconftw && ./install.sh',
+    lines:[['# Kit Python + Rust + frameworks','cmt'],['cargo','cmd',' install rustscan x8','arg'],['pipx','cmd',' install arjun bbot dnsgen','arg'],['git','cmd',' clone XSStrike Corsy ParamSpider SSRFmap commix','arg'],['git','cmd',' clone SecLists + reconftw (./install.sh)','arg']]};
+
   /* ---------- default state ---------- */
   function seed(){return {
     theme:null,
@@ -827,11 +835,10 @@ Como o time deve mitigar a falha.</pre>
        cmd:'pkg update && pkg upgrade -y\npkg install -y git python nmap curl wget openssh netcat-openbsd proot-distro\ntermux-setup-storage',
        lines:[['# 1 · essenciais no Termux','cmt'],['pkg','cmd',' update && pkg upgrade -y','arg'],['pkg','cmd',' install -y git python nmap curl wget openssh netcat-openbsd proot-distro','arg'],['termux-setup-storage','cmd','','']]},
       {t:'Instalar Debian via proot-distro', done:false,
-       cmd:'proot-distro install debian\nproot-distro login debian\napt update && apt -y upgrade\napt install -y git python3 python3-pip nmap whois dnsutils golang pipx',
-       lines:[['# 2 · userland Linux completo','cmt'],['proot-distro','cmd',' install debian','arg'],['proot-distro','cmd',' login debian','arg'],['# dentro do Debian:','cmt'],['apt','cmd',' update && apt -y upgrade','arg'],['apt','cmd',' install -y git python3 python3-pip nmap whois dnsutils golang pipx','arg']]},
-      {t:'Instalar toolkit de recon (ProjectDiscovery)', done:false,
-       cmd:'go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest\ngo install github.com/projectdiscovery/httpx/cmd/httpx@latest\ngo install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest\ngit clone https://github.com/danielmiessler/SecLists.git',
-       lines:[['# 3 · recon web (bug bounty)','cmt'],['go','cmd',' install .../subfinder@latest','arg'],['go','cmd',' install .../httpx@latest','arg'],['go','cmd',' install .../nuclei@latest','arg'],['git','cmd',' clone .../SecLists.git','arg']]},
+       cmd:'proot-distro install debian\nproot-distro login debian\napt update && apt -y upgrade\napt install -y git python3 python3-pip nmap nikto whatweb hydra john sqlmap whois dnsutils golang cargo pipx',
+       lines:[['# 2 · userland Linux completo','cmt'],['proot-distro','cmd',' install debian','arg'],['proot-distro','cmd',' login debian','arg'],['# dentro do Debian:','cmt'],['apt','cmd',' update && apt -y upgrade','arg'],['apt','cmd',' install -y git python3 python3-pip golang cargo pipx nmap nikto whatweb hydra john sqlmap','arg']]},
+      {t:'Kit Go — recon + exploit (dentro do Debian)', done:false, cmd:GOKIT.cmd, lines:GOKIT.lines},
+      {t:'Kit Python/Rust + frameworks (dentro do Debian)', done:false, cmd:PYKIT.cmd, lines:PYKIT.lines},
       {t:'Primeiro recon na SUA rede', done:false,
        cmd:'ip addr\nnmap -sn 192.168.0.0/24\nnmap -sV -T4 192.168.0.1',
        lines:[['# 4 · recon (só rede/alvo SEU)','cmt'],['ip','cmd',' addr','arg'],['nmap','cmd',' -sn 192.168.0.0/24','arg'],['nmap','cmd',' -sV -T4 192.168.0.1','arg']]},
@@ -843,12 +850,11 @@ Como o time deve mitigar a falha.</pre>
       {t:'Ativar WSL2 e instalar o Kali Linux', done:false,
        cmd:'wsl --install\nwsl --install -d kali-linux\nwsl -d kali-linux',
        lines:[['# 1 · PowerShell como Administrador','cmt'],['wsl','cmd',' --install','arg'],['wsl','cmd',' --install -d kali-linux','arg'],['wsl','cmd',' -d kali-linux','arg']]},
-      {t:'Atualizar o Kali e instalar o kit top 10', done:false,
-       cmd:'sudo apt update && sudo apt full-upgrade -y\nsudo apt install -y kali-tools-top10 golang',
-       lines:[['# 2 · dentro do Kali (WSL)','cmt'],['sudo apt','cmd',' update && sudo apt full-upgrade -y','arg'],['sudo apt','cmd',' install -y kali-tools-top10 golang','arg']]},
-      {t:'Toolkit de recon (Go) + SecLists', done:false,
-       cmd:'go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest\ngo install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest\ngit clone https://github.com/danielmiessler/SecLists.git',
-       lines:[['# 3 · recon web','cmt'],['go','cmd',' install .../subfinder@latest','arg'],['go','cmd',' install .../nuclei@latest','arg'],['git','cmd',' clone .../SecLists.git','arg']]},
+      {t:'Atualizar o Kali + base (Go, Rust, pipx)', done:false,
+       cmd:'sudo apt update && sudo apt full-upgrade -y\nsudo apt install -y kali-tools-top10 golang cargo pipx python3-pip\npipx ensurepath',
+       lines:[['# 2 · dentro do Kali (WSL)','cmt'],['sudo apt','cmd',' update && sudo apt full-upgrade -y','arg'],['sudo apt','cmd',' install -y kali-tools-top10 golang cargo pipx python3-pip','arg'],['pipx','cmd',' ensurepath','arg']]},
+      {t:'Kit Go — recon + exploit (no Kali)', done:false, cmd:GOKIT.cmd, lines:GOKIT.lines},
+      {t:'Kit Python/Rust + frameworks (no Kali)', done:false, cmd:PYKIT.cmd, lines:PYKIT.lines},
       {t:'(Alternativa) Kali VM completa no VirtualBox', done:false,
        cmd:'# 1. Instale o VirtualBox:  virtualbox.org/wiki/Downloads\n# 2. Baixe a imagem Kali VM:  kali.org/get-kali  (aba Virtual Machines)\n# 3. Importe o arquivo .ova e inicie a VM\n# 4. Login padrao:  kali / kali',
        lines:[['# 4 · VM isolada (mais segura p/ testar)','cmt'],['# VirtualBox + imagem oficial Kali (.ova)','cmt'],['kali.org/get-kali','arg',' -> Virtual Machines','arg'],['# login inicial: kali / kali','cmt']]}
@@ -857,12 +863,8 @@ Como o time deve mitigar a falha.</pre>
       {t:'Base — linguagens + scanners clássicos (apt)', done:false,
        cmd:'sudo apt update && sudo apt -y upgrade\nsudo apt install -y git curl wget golang cargo pipx python3 python3-pip whois dnsutils\nsudo apt install -y nmap nikto whatweb hydra john sqlmap masscan\npipx ensurepath',
        lines:[['# 1 · base + linguagens + scanners (Zorin = Ubuntu)','cmt'],['sudo apt','cmd',' update && sudo apt -y upgrade','arg'],['sudo apt','cmd',' install -y git curl wget golang cargo pipx python3 python3-pip','arg'],['sudo apt','cmd',' install -y nmap nikto whatweb hydra john sqlmap masscan','arg'],['pipx','cmd',' ensurepath','arg']]},
-      {t:'Kit Go — recon + exploit (20+ ferramentas)', done:false,
-       cmd:'# ProjectDiscovery\ngo install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest\ngo install github.com/projectdiscovery/httpx/cmd/httpx@latest\ngo install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest\ngo install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest\ngo install github.com/projectdiscovery/dnsx/cmd/dnsx@latest\ngo install github.com/projectdiscovery/katana/cmd/katana@latest\ngo install github.com/projectdiscovery/notify/cmd/notify@latest\n# tomnomnom\ngo install github.com/tomnomnom/waybackurls@latest\ngo install github.com/tomnomnom/assetfinder@latest\ngo install github.com/tomnomnom/httprobe@latest\ngo install github.com/tomnomnom/anew@latest\ngo install github.com/tomnomnom/gf@latest\ngo install github.com/tomnomnom/unfurl@latest\ngo install github.com/tomnomnom/qsreplace@latest\n# web / exploit\ngo install github.com/ffuf/ffuf/v2@latest\ngo install github.com/lc/gau/v2/cmd/gau@latest\ngo install github.com/hahwul/dalfox/v2@latest\ngo install github.com/sensepost/gowitness@latest\ngo install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest\ngo install github.com/KathanP19/Gxss@latest\ngo install github.com/hakluke/hakrawler@latest',
-       lines:[['# 2 · kit Go (copie TUDO no botao)','cmt'],['# ProjectDiscovery:','cmt'],['go','cmd',' install subfinder httpx nuclei naabu dnsx katana notify','arg'],['# tomnomnom:','cmt'],['go','cmd',' install waybackurls assetfinder httprobe anew gf unfurl qsreplace','arg'],['# web/exploit:','cmt'],['go','cmd',' install ffuf gau dalfox gowitness crlfuzz Gxss hakrawler','arg']]},
-      {t:'Kit Python/Rust + frameworks + wordlists', done:false,
-       cmd:'# Rust\ncargo install rustscan x8\n# Python (pipx)\npipx install arjun\npipx install bbot\npipx install dnsgen\n# ferramentas por clone\nmkdir -p ~/tools && cd ~/tools\ngit clone https://github.com/s0md3v/XSStrike.git\ngit clone https://github.com/s0md3v/Corsy.git\ngit clone https://github.com/devanshbatham/ParamSpider.git\ngit clone https://github.com/swisskyrepo/SSRFmap.git\ngit clone https://github.com/commixproject/commix.git\n# wordlists + framework all-in-one\ngit clone https://github.com/danielmiessler/SecLists.git\ngit clone https://github.com/six2dez/reconftw.git && cd reconftw && ./install.sh',
-       lines:[['# 3 · Python + Rust + frameworks','cmt'],['cargo','cmd',' install rustscan x8','arg'],['pipx','cmd',' install arjun bbot dnsgen','arg'],['git','cmd',' clone XSStrike Corsy ParamSpider SSRFmap commix','arg'],['git','cmd',' clone SecLists + reconftw (./install.sh)','arg']]},
+      {t:'Kit Go — recon + exploit (20+ ferramentas)', done:false, cmd:GOKIT.cmd, lines:GOKIT.lines},
+      {t:'Kit Python/Rust + frameworks + wordlists', done:false, cmd:PYKIT.cmd, lines:PYKIT.lines},
       {t:'Proxy web: OWASP ZAP + Firefox', done:false,
        cmd:'sudo apt install -y zaproxy firefox\n# Burp Suite Community: portswigger.net/burp',
        lines:[['# 3 · interceptar trafego web','cmt'],['sudo apt','cmd',' install -y zaproxy firefox','arg'],['# Burp Community: portswigger.net/burp','cmt']]},
