@@ -49,6 +49,10 @@ html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(900px 500px at 82% -8%,var(--accent-glow),transparent 60%),radial-gradient(700px 600px at -5% 10%,rgba(255,33,48,.08),transparent 55%)}
+#cryptobg{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.40;transition:opacity .4s}
+:root[data-theme="light"] #cryptobg{opacity:.08}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #cryptobg{opacity:.08}}
+@media (prefers-reduced-motion:reduce){#cryptobg{opacity:.18}}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:18px}
 a{color:inherit}
 h1,h2,h3,h4{font-family:var(--sans);font-weight:700;text-wrap:balance;margin:0;letter-spacing:-.02em}
@@ -374,6 +378,8 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<canvas id="cryptobg" aria-hidden="true"></canvas>
 
 <header class="topbar">
   <div class="wrap">
@@ -1667,6 +1673,78 @@ Como o time deve mitigar a falha.</pre>
   var hash=(location.hash||'').replace('#','');
   var valid=['comando','roadmap','setup','arsenal','projetos','progresso','commands','playbook','models'];
   showTab(valid.indexOf(hash)>=0?hash:(valid.indexOf(S.tab)>=0?S.tab:'comando'));
+})();
+</script>
+
+<script>
+/* ===== GOLGOTHATEAMS · fundo "chuva de criptografia" ao vivo ===== */
+(function(){
+  var c=document.getElementById('cryptobg'); if(!c) return;
+  var ctx; try{ctx=c.getContext('2d');}catch(e){return;}
+  var reduce=false; try{reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+  var FS=14, cols=0, ypos=[], mode=[];
+  var SETS={bin:'01',hex:'0123456789ABCDEF',al:'ABCDEFGHJKLMNPQRSTUVWXYZ',sym:'/\\|<>=+*#$%&[]{}^~░▒▲▼◆◇»«'};
+  var KEYS=['bin','hex','al','sym'];
+  var TOKENS=['ACCESS GRANTED','root@kali:~#','10.0.0.','192.168.1.','CN=Admin,DC=corp,DC=local',
+    'S-1-5-21-','nmap -sV','nuclei -severity high','Authorization: Bearer','SELECT * FROM users',
+    'sudo -l','HTTP/1.1 200 OK','0xDEADBEEF','GET /admin','SUCCESS','TGT::kerberos','mimikatz # privilege',
+    'whoami /priv','SID=S-1-5-18','SSH-2.0-OpenSSH','[+] shell obtained','NTLM:','hash cracked'];
+  var tokens=[], vw=0, vh=0, dpr=1;
+  function pick(k){var s=SETS[k];return s.charAt((Math.random()*s.length)|0);}
+  function size(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    vw=window.innerWidth; vh=window.innerHeight;
+    c.width=Math.floor(vw*dpr); c.height=Math.floor(vh*dpr);
+    c.style.width=vw+'px'; c.style.height=vh+'px';
+    try{ctx.setTransform(dpr,0,0,dpr,0,0);}catch(e){ctx.scale(dpr,dpr);}
+    cols=Math.max(1,Math.floor(vw/FS));
+    ypos=[]; mode=[];
+    for(var i=0;i<cols;i++){ypos[i]=Math.random()*-60; mode[i]=KEYS[(Math.random()*KEYS.length)|0];}
+    tokens=[];
+    ctx.fillStyle='rgba(9,9,11,1)'; ctx.fillRect(0,0,vw,vh);
+  }
+  function frame(){
+    ctx.fillStyle='rgba(9,9,11,0.085)'; ctx.fillRect(0,0,vw,vh);
+    ctx.font=FS+'px "JetBrains Mono", ui-monospace, monospace';
+    for(var i=0;i<cols;i++){
+      var x=i*FS, y=ypos[i]*FS;
+      if(Math.random()<0.0022) mode[i]=KEYS[(Math.random()*KEYS.length)|0];
+      ctx.fillStyle='rgba(255,120,130,0.92)'; ctx.fillText(pick(mode[i]),x,y);
+      ctx.fillStyle='rgba(255,33,48,0.30)'; ctx.fillText(pick(mode[i]),x,y-FS);
+      ypos[i]+=1;
+      if(y>vh && Math.random()>0.975) ypos[i]=Math.random()*-20;
+    }
+    if(tokens.length<4 && Math.random()<0.028)
+      tokens.push({x:((Math.random()*cols)|0)*FS, y:Math.random()*-8*FS, t:TOKENS[(Math.random()*TOKENS.length)|0]});
+    ctx.font='bold '+FS+'px "JetBrains Mono", ui-monospace, monospace';
+    for(var k=tokens.length-1;k>=0;k--){
+      var tk=tokens[k];
+      for(var j=0;j<tk.t.length;j++){
+        var yy=tk.y - j*FS; if(yy<-FS||yy>vh+FS) continue;
+        var a=1-j*0.055; if(a<0.18)a=0.18;
+        ctx.fillStyle=(j===0)?'rgba(255,255,255,0.95)':'rgba(255,45,58,'+a.toFixed(2)+')';
+        ctx.fillText(tk.t.charAt(j), tk.x, yy);
+      }
+      tk.y+=1.25;
+      if(tk.y - tk.t.length*FS > vh) tokens.splice(k,1);
+    }
+  }
+  var raf=0, last=0;
+  function loop(t){ raf=requestAnimationFrame(loop); if(t-last<42) return; last=t; frame(); }
+  function staticFrame(){
+    ctx.fillStyle='rgba(9,9,11,1)'; ctx.fillRect(0,0,vw,vh);
+    ctx.font=FS+'px "JetBrains Mono", monospace';
+    for(var i=0;i<cols;i++){for(var r=0;r<vh/FS;r++){ if(Math.random()<0.07){ ctx.fillStyle='rgba(255,33,48,'+(Math.random()*0.5).toFixed(2)+')'; ctx.fillText(pick(mode[i]||'hex'), i*FS, r*FS); } }}
+  }
+  size();
+  if(reduce){ staticFrame(); }
+  else { raf=requestAnimationFrame(loop); }
+  var rt;
+  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){size(); if(reduce) staticFrame();},180);});
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){ if(raf) cancelAnimationFrame(raf); raf=0; }
+    else if(!reduce && !raf){ raf=requestAnimationFrame(loop); }
+  });
 })();
 </script>
 
