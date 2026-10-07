@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GOLGOTHATEAMS</title>
-<meta name="description" content="App de comando de Victor para bug bounty: abas funcionais, roadmap com progresso e board de projetos com CRUD completo.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23ff2130'/%3E%3Ctext x='50' y='73' font-family='Arial,Helvetica,sans-serif' font-size='66' font-weight='bold' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<meta name="description" content="GOLGOTHATEAMS — hub de comando para bug bounty: abas, roadmap, setup multi-plataforma, playbook e board de projetos.">
 <style>
 /* Layout: app com abas (tabbar), cada view é um painel. Dark-first preto/vermelho, light branco/vermelho. Estado em localStorage. */
 :root{
@@ -771,7 +772,13 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
        lines:[['# 3 · interceptar trafego web','cmt'],['sudo apt','cmd',' install -y zaproxy firefox','arg'],['# Burp Community: portswigger.net/burp','cmt']]},
       {t:'(Opcional) Ferramentas do Kali via Docker', done:false,
        cmd:'sudo apt install -y docker.io\nsudo docker run -it kalilinux/kali-rolling',
-       lines:[['# 4 · kit Kali sem trocar de SO','cmt'],['sudo apt','cmd',' install -y docker.io','arg'],['sudo docker','cmd',' run -it kalilinux/kali-rolling','arg']]}
+       lines:[['# 4 · kit Kali sem trocar de SO','cmt'],['sudo apt','cmd',' install -y docker.io','arg'],['sudo docker','cmd',' run -it kalilinux/kali-rolling','arg']]},
+      {t:'Instalar HexStrike AI (framework 150+ ferramentas)', done:false,
+       cmd:'git clone https://github.com/0x4m4/hexstrike-ai.git\ncd hexstrike-ai\npython3 -m venv hexstrike-env\nsource hexstrike-env/bin/activate\npip3 install -r requirements.txt\npython3 hexstrike_server.py\n# testar noutra aba:\ncurl http://localhost:8888/health',
+       lines:[['# HexStrike AI · servidor que orquestra 150+ ferramentas','cmt'],['git','cmd',' clone https://github.com/0x4m4/hexstrike-ai.git','arg'],['cd','cmd',' hexstrike-ai','arg'],['python3','cmd',' -m venv hexstrike-env','arg'],['source','cmd',' hexstrike-env/bin/activate','arg'],['pip3','cmd',' install -r requirements.txt','arg'],['python3','cmd',' hexstrike_server.py','arg'],['# porta 8888 · testar: curl http://localhost:8888/health','cmt']]},
+      {t:'Instalar METATRON (pentest + LLM local abliterated)', done:false,
+       cmd:'git clone https://github.com/sooryathejas/METATRON.git\ncd METATRON\npython3 -m venv venv && source venv/bin/activate\npip install -r requirements.txt\ncurl -fsSL https://ollama.com/install.sh | sh\nollama pull huihui_ai/qwen3.5-abliterated:9b   # 4b se CPU fraca\nollama create metatron-qwen -f Modelfile\nsudo apt install -y mariadb-server && sudo service mariadb start\n# depois: crie o banco (veja o README do repo)\n# aba 1: ollama run metatron-qwen\n# aba 2: python metatron.py',
+       lines:[['# METATRON · assistente de pentest com IA 100% local','cmt'],['git','cmd',' clone https://github.com/sooryathejas/METATRON.git','arg'],['cd','cmd',' METATRON','arg'],['python3','cmd',' -m venv venv && source venv/bin/activate','arg'],['pip','cmd',' install -r requirements.txt','arg'],['curl','cmd',' -fsSL https://ollama.com/install.sh | sh','arg'],['ollama','cmd',' pull huihui_ai/qwen3.5-abliterated:9b','arg'],['ollama','cmd',' create metatron-qwen -f Modelfile','arg'],['sudo apt','cmd',' install -y mariadb-server','arg'],['# crie o banco (README do repo). Rodar em 2 abas:','cmt'],['# aba1: ollama run metatron-qwen  |  aba2: python metatron.py','cmt']]}
      ]
     },
     phases:[
@@ -1122,7 +1129,31 @@ footer .mono{font-family:var(--mono);font-size:11px;color:var(--faint);letter-sp
      find:'Tokens JWT no header Authorization/cookie. Decode e veja alg, claims (role, user).',
      prove:'Teste alg:none, chave fraca (bruteforce HS256) ou troca de claim (role:admin).',
      payload:'# header {"alg":"none"}  +  payload {"user":"admin"}  (sem assinatura)',
-     impact:'Falsificar identidade, virar admin. Alto valor.'}
+     impact:'Falsificar identidade, virar admin. Alto valor.'},
+    {id:'cors',n:'CORS Mal Configurado',sev:'MÉDIA',c:'#ffd60a',
+     what:'Política de CORS permissiva deixa outro site ler respostas autenticadas da vítima.',
+     find:'Mande o header Origin: https://evil.com e veja se volta Access-Control-Allow-Origin refletido + Allow-Credentials: true.',
+     prove:'Uma página sua faz fetch com credentials no alvo e consegue LER a resposta (dados da vítima).',
+     payload:'Origin: https://evil.com  ->  ACAO reflete + ACAC: true',
+     impact:'Vazamento de dados autenticados entre origens.'},
+    {id:'race',n:'Race Condition',sev:'ALTA',c:'#ff8f3f',
+     what:'Enviar várias requisições no mesmo instante pra burlar uma checagem (ex: usar cupom/saldo 2x).',
+     find:'Ações com limite: resgatar cupom, sacar, votar, aplicar desconto, convidar.',
+     prove:'Dispare N requisições em paralelo no mesmo instante (Burp Turbo Intruder / single-packet).',
+     payload:'20x POST /redeem?coupon=X em paralelo',
+     impact:'Gastar valor 1x e receber N vezes; bypass de limites.'},
+    {id:'graphql',n:'GraphQL Exposto',sev:'ALTA',c:'#ff8f3f',
+     what:'Endpoint GraphQL com introspection ligada vaza todo o schema e campos sensíveis.',
+     find:'Procure /graphql e /api/graphql. Rode a query de introspection.',
+     prove:'A introspection lista tipos e campos; teste over-fetch e IDOR nos campos achados.',
+     payload:'{__schema{types{name fields{name}}}}',
+     impact:'Mapa completo da API, campos não documentados, IDOR.'},
+    {id:'takeover',n:'Subdomain Takeover',sev:'ALTA',c:'#ff8f3f',
+     what:'Subdomínio aponta (CNAME) pra um serviço desativado — você registra o recurso e assume o subdomínio.',
+     find:'subfinder + httpx; ache CNAME pra S3/GitHub Pages/Heroku respondendo NoSuchBucket ou 404 do serviço.',
+     prove:'Registre o recurso órfão (ex: bucket S3 com o mesmo nome) e sirva conteúdo no subdomínio do alvo.',
+     payload:'sub.alvo.com -> CNAME bucket.s3.amazonaws.com (NoSuchBucket)',
+     impact:'Controle do subdomínio: phishing, roubo de cookies, bypass de SSO.'}
   ];
   var pbOpen={};
   function pbField(l,v){return '<div><label>'+l+'</label><p>'+esc(v)+'</p></div>';}
